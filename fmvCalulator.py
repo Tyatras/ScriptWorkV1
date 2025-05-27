@@ -1,12 +1,28 @@
 import streamlit as st
 import pandas as pd
+from io import StringIO
 
 st.set_page_config(page_title="FMV Adjustment Calculator", layout="centered")
 st.title("FMV Adjustment Calculator")
 st.write("Upload two CSV files to calculate FMV adjustments based on asset data.")
 
+# CSV Template Header
+csv_template = StringIO()
+pd.DataFrame(columns=[
+    "Asset", "Qty", "Cost Basis (Acq)", "Cost Basis (Disp)", "Cost Basis",
+    "Fair Market Value", "Unrealized Gain/Loss", "Inventory", "Confirm FMV"
+]).to_csv(csv_template, index=False)
+
+# Downloadable CSV template
+st.download_button(
+    label="📄 Download Inventory Template CSV",
+    data=csv_template.getvalue(),
+    file_name="InventoryViewsSummaryTemplate.csv",
+    mime="text/csv"
+)
+
 # Upload files
-sheet1_file = st.file_uploader("Upload Reference Data (sheet1.csv)", type="csv", key="sheet1")
+sheet1_file = st.file_uploader("Upload Reference Data (InventoryViewsSummaryTemplate.csv)", type="csv", key="sheet1")
 sheet2_file = st.file_uploader("Upload Transaction Data (sheet2.csv)", type="csv", key="sheet2")
 
 # Add a button to trigger calculation
