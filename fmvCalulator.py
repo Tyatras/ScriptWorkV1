@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 from io import StringIO
 
@@ -56,12 +55,12 @@ if sheet1_file and sheet2_file:
         df2['newfmv'] = df2['qty'].fillna(0) * df2['fmvrate'].fillna(0)
 
         # Ensure 'costbasis' and 'newfmv' are numeric
-        df2['costbasis'] = pd.to_numeric(df2['cost basis'], errors='coerce').fillna(0)
+        df2['costbasis'] = pd.to_numeric(df2['costbasis'], errors='coerce').fillna(0)
         df2['newfmv'] = pd.to_numeric(df2['newfmv'], errors='coerce').fillna(0)
 
         # Create fmv adj down and up
         df2['fmv adj down'] = df2.apply(
-            lambda row: row['cost basis'] - row['newfmv'] if row['cost basis'] > row['newfmv'] else 0,
+            lambda row: row['costbasis'] - row['newfmv'] if row['cost basis'] > row['newfmv'] else 0,
             axis=1
         )
         df2['fmv adj up'] = df2.apply(
