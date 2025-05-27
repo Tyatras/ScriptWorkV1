@@ -57,11 +57,11 @@ if sheet1_file and sheet2_file:
 
         # Create fmv adj down and up based on newfmv - cost basis
         df2['fmv adj down'] = df2.apply(
-    lambda row: row['newfmv'] - row.get('cost basis', 0) if (row['newfmv'] - row.get('cost basis', 0)) < 0 else 0,
+    lambda row: row.get('cost basis', 0) - row['newfmv'] if row.get('cost basis', 0) > row['newfmv'] else 0,
     axis=1
 )
         df2['fmv adj up'] = df2.apply(
-    lambda row: row['newfmv'] - row.get('cost basis', 0) if (row['newfmv'] - row.get('cost basis', 0)) > 0 else 0,
+    lambda row: row['newfmv'] - row.get('cost basis', 0) if row.get('cost basis', 0) < row['newfmv'] else 0,
     axis=1
 )
 
