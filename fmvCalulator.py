@@ -55,8 +55,8 @@ if sheet1_file and sheet2_file:
         # Create new FMV column in Sheet 2
         df2['newfmv'] = df2['qty'].fillna(0) * df2['fmvrate'].fillna(0)
 
-        # Ensure 'cost basis' and 'newfmv' are numeric
-        df2['cost basis'] = pd.to_numeric(df2['cost basis'], errors='coerce').fillna(0)
+        # Ensure 'costbasis' and 'newfmv' are numeric
+        df2['costbasis'] = pd.to_numeric(df2['cost basis'], errors='coerce').fillna(0)
         df2['newfmv'] = pd.to_numeric(df2['newfmv'], errors='coerce').fillna(0)
 
         # Create fmv adj down and up
