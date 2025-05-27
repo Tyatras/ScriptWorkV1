@@ -1,3 +1,4 @@
+import streamlit as st
 import pandas as pd
 from io import StringIO
 
@@ -60,11 +61,11 @@ if sheet1_file and sheet2_file:
 
         # Create fmv adj down and up
         df2['fmv adj down'] = df2.apply(
-            lambda row: row['costbasis'] - row['newfmv'] if row['cost basis'] > row['newfmv'] else 0,
+            lambda row: row['costbasis'] - row['newfmv'] if row['costbasis'] > row['newfmv'] else 0,
             axis=1
         )
         df2['fmv adj up'] = df2.apply(
-            lambda row: row['newfmv'] - row['cost basis'] if row['cost basis'] < row['newfmv'] else 0,
+            lambda row: row['newfmv'] - row['costbasis'] if row['costbasis'] < row['newfmv'] else 0,
             axis=1
         )
 
