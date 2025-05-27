@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 
 st.set_page_config(page_title="FMV Adjustment Calculator", layout="centered")
@@ -24,16 +23,8 @@ if sheet1_file and sheet2_file:
         merged = df2.merge(df1[['asset', 'confirm fmv']], how='left', on='asset')
         merged.rename(columns={'confirm fmv': 'fmv'}, inplace=True)
 
-        # Calculate FMV Adjustment
-        def calculate_adjustment(row):
-            try:
-                if pd.isna(row['qty']) or row['qty'] == 0:
-                    return 0.0
-                return row['qty'] * row['fmv']
-            except:
-                return 0.0
-
-        merged['fmv adjustment'] = merged.apply(calculate_adjustment, axis=1)
+        # Multiply qty by FMV directly
+        merged['fmv adjustment'] = merged['qty'].fillna(0) * merged['fmv'].fillna(0)
 
         # Show results
         st.subheader("Updated Transactions Table")
