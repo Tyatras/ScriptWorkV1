@@ -55,13 +55,13 @@ if sheet1_file and sheet2_file:
         # Create new FMV column in Sheet 2
         df2['newfmv'] = df2['qty'].fillna(0) * df2['fmvrate'].fillna(0)
 
-        # Create fmv adj down and up based on carryingvalue - newfmv
+        # Create fmv adj down and up based on newfmv - cost basis
         df2['fmv adj down'] = df2.apply(
-            lambda row: row['carryingvalue'] - row['newfmv'] if (row['carryingvalue'] - row['newfmv']) < 0 else 0,
+            lambda row: row['newfmv'] - row['cost basis'] if (row['newfmv'] - row['cost basis']) < 0 else 0,
             axis=1
         )
         df2['fmv adj up'] = df2.apply(
-            lambda row: row['carryingvalue'] - row['newfmv'] if (row['carryingvalue'] - row['newfmv']) > 0 else 0,
+            lambda row: row['newfmv'] - row['cost basis'] if (row['newfmv'] - row['cost basis']) > 0 else 0,
             axis=1
         )
 
