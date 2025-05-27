@@ -20,12 +20,15 @@ if sheet1_file and sheet2_file:
         df1.columns = df1.columns.str.strip().str.lower()
         df2.columns = df2.columns.str.strip().str.lower()
 
+        # Deduplicate asset entries to avoid merge duplications
+        df1 = df1.drop_duplicates(subset='asset')
+
         # Merge Confirm FMV from Sheet 1 into Sheet 2
         df2 = df2.merge(df1[['asset', 'confirm fmv']], how='left', on='asset')
-        df2.rename(columns={'confirm fmv': 'fmv'}, inplace=True)
+        df2.rename(columns={'confirm fmv': 'fmvrate'}, inplace=True)
 
-        # Create FMV Adjustment column in Sheet 2
-        df2['fmv adjustment'] = df2['qty'].fillna(0) * df2['fmv'].fillna(0)
+        # Create new FMV column in Sheet 2
+        df2['newfmv'] = df2['qty'].fillna(0) * df2['fmvrate'].fillna(0)
 
         # Show results
         st.subheader("Updated Transactions Table")
