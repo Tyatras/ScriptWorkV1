@@ -4,7 +4,17 @@ from io import StringIO
 
 st.set_page_config(page_title="FMV Adjustment Calculator", layout="centered")
 st.title("FMV Adjustment Calculator")
-st.write("Upload two CSV files to calculate FMV adjustments based on asset data.")
+st.markdown("""
+### 📋 Instructions
+1. **Download** the Inventory Views Summary Template CSV using the button below.
+2. **Go to** the Inventory View you are using, select the date you wish the FMV Calculation to occur, and click Submit.
+3. **Paste** the header from the Inventory Views Summary Template CSV onto your Bitwave-downloaded Summary report.
+4. **Confirm** the FMV rate for each asset in the \"Confirm FMV\" column.
+5. **Save** your file for easy reference and upload below.
+6. **Download** the Lots report for the same date.
+7. **Upload** the Lots report below.
+"""
+""")
 
 # CSV Template Header
 csv_template = StringIO()
@@ -15,7 +25,7 @@ pd.DataFrame(columns=[
 
 # Downloadable CSV template
 st.download_button(
-    label="📄 Download Inventory Template CSV",
+    label="📄 Inventory Views Summary Template CSV",
     data=csv_template.getvalue(),
     file_name="InventoryViewsSummaryTemplate.csv",
     mime="text/csv"
@@ -23,7 +33,7 @@ st.download_button(
 
 # Upload files
 sheet1_file = st.file_uploader("Upload Reference Data (InventoryViewsSummaryTemplate.csv)", type="csv", key="sheet1")
-sheet2_file = st.file_uploader("Upload Transaction Data (sheet2.csv)", type="csv", key="sheet2")
+sheet2_file = st.file_uploader("Upload Lots Report (lots_report.csv)", type="csv", key="sheet2")
 
 # Add a button to trigger calculation
 if sheet1_file and sheet2_file:
