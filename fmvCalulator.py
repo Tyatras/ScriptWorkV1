@@ -59,15 +59,11 @@ if sheet1_file and sheet2_file:
         df2['fmv adj down'] = df2.apply(
     lambda row: row['newfmv'] - row.get('cost basis', 0) if (row['newfmv'] - row.get('cost basis', 0)) < 0 else 0,
     axis=1
-) < 0 else 0,
-            axis=1
-        )
+)
         df2['fmv adj up'] = df2.apply(
     lambda row: row['newfmv'] - row.get('cost basis', 0) if (row['newfmv'] - row.get('cost basis', 0)) > 0 else 0,
     axis=1
-) > 0 else 0,
-            axis=1
-        )
+)
 
         # Show results
         st.subheader("Updated Transactions Table")
@@ -83,4 +79,3 @@ if sheet1_file and sheet2_file:
         )
 else:
     st.info("Please upload both CSV files to begin.")
-
