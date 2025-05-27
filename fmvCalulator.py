@@ -13,7 +13,6 @@ st.markdown("""
 5. **Save** your file for easy reference and upload below.
 6. **Download** the Lots report for the same date.
 7. **Upload** the Lots report below.
-"""
 """)
 
 # CSV Template Header
