@@ -3,7 +3,7 @@ import pandas as pd
 from io import StringIO
 
 st.set_page_config(page_title="Cost Basis Roll Forward Calculator", layout="centered")
-st.title("📊 Cost Basis Roll Forward Calculator")
+st.title("\U0001F4CA Cost Basis Roll Forward Calculator")
 
 # Downloadable CSV template
 template = pd.DataFrame(columns=[
@@ -15,7 +15,7 @@ csv_template = StringIO()
 template.to_csv(csv_template, index=False)
 
 st.download_button(
-    label="📄 Download Example CSV Template",
+    label="\U0001F4C4 Download Example CSV Template",
     data=csv_template.getvalue(),
     file_name="example_action_data_template.csv",
     mime="text/csv"
@@ -38,31 +38,24 @@ if uploaded_file:
     else:
         if st.button("✅ Calculate Cost Basis Roll Forward"):
             # Filter out internal transfers (0 or blank)
-            filtered = df[(df['isinternaltransfer'].fillna(1) != 0)]
+            filtered = df[(df['isinternaltransfer'].isna()) | (df['isinternaltransfer'] == 0)]
 
-            # Group by asset and aggregate
-            grouped = filtered.groupby("asset").agg({
-                "assetunitadj": [
-                    lambda x: x[df.loc[x.index, 'action'] == 'buy'].sum(),  # Qty (acq)
-                    lambda x: x[df.loc[x.index, 'action'] == 'sell'].sum()  # Qty (disp)
-                ],
-                "costbasisacquired": lambda x: x[df.loc[x.index, 'action'] == 'buy'].sum(),
-                "fairmarketvaluedisposed": lambda x: x[df.loc[x.index, 'action'] == 'sell'].sum(),
-                "shorttermgainloss": "sum",
-                "longtermgainloss": "sum"
-            }).reset_index()
+            # Calculate pivot values
+            summary = filtered.groupby('asset').apply(lambda x: pd.Series({
+                "Qty (acq)": x[(x['action'] == 'buy')]['assetunitadj'].sum(),
+                "Cost Basis (acq)": x[(x['action'] == 'buy')]['costbasisacquired'].sum(),
+                "Qty (disp)": x[(x['action'] == 'sell')]['assetunitadj'].sum(),
+                "Proceeds From Disposal": x[(x['action'] == 'sell')]['fairmarketvaluedisposed'].sum(),
+                "ST Gain Loss": x['shorttermgainloss'].sum(),
+                "LT Gain Loss": x['longtermgainloss'].sum()
+            })).reset_index()
 
-            grouped.columns = [
-                "Asset", "Qty (acq)", "Qty (disp)", "Cost Basis (acq)",
-                "Proceeds From Disposal", "ST Gain Loss", "LT Gain Loss"
-            ]
+            st.subheader("\U0001F4D8 Cost Basis Summary Table")
+            st.dataframe(summary)
 
-            st.subheader("📘 Cost Basis Summary Table")
-            st.dataframe(grouped)
-
-            csv = grouped.to_csv(index=False).encode("utf-8")
+            csv = summary.to_csv(index=False).encode("utf-8")
             st.download_button(
-                label="📥 Download Summary CSV",
+                label="\U0001F4E5 Download Summary CSV",
                 data=csv,
                 file_name="cost_basis_summary.csv",
                 mime="text/csv"
