@@ -3,64 +3,70 @@ import pandas as pd
 from io import StringIO
 from datetime import datetime
 
-# Set page config
 st.set_page_config(page_title="Report Polisher", layout="centered")
 st.title("🧼 Report Polisher")
 
-# --- Step 1: Inputs ---
-st.subheader("📥 Upload and Customize Report")
+st.markdown("""
+This app lets you upload a CSV, apply a professional header with your custom inputs, and download a polished report.
+""")
 
-with st.form("report_form"):
-    col1, col2 = st.columns(2)
-    with col1:
-        company_name = st.text_input("Company Name", max_chars=100)
-    with col2:
-        report_type = st.selectbox("Report Type", [
-            "Transactions Export",
-            "Balance Report",
-            "Balance Report Expanded",
-            "Custom Report"
-        ])
+# Input form
+with st.form("user_input_form"):
+    company_name = st.text_input("🏢 Company Name")
 
-    date_range = st.text_input("Date or Date Range", placeholder="e.g., Jan 2024 or 01/01/24 - 01/31/24")
-    uploaded_file = st.file_uploader("Upload CSV Report", type="csv")
+    report_options = [
+        "Transaction Export", "Balance Report", "Balance Check Report",
+        "Balance Report Expanded", "Journal Entry Report Expanded",
+        "General Ledger Summary Report", "General Ledger Detail Report",
+        "Valuation Rollforward Report", "Cost Basis Roll Forward",
+        "Actions Report", "Ledger Report", "Dashboard Summary Report",
+        "Dashboard Results Report", "Custom Report"
+    ]
 
-    submitted = st.form_submit_button("✅ Generate Polished Report")
+    report_type = st.selectbox("📋 Report Type", options=report_options)
+    date_range = st.text_input("📅 Date or Date Range (e.g. Jan 2024, 01/01/2024 - 01/31/2024)")
 
-# --- Step 2: Process and Output ---
+    uploaded_file = st.file_uploader("📥 Upload CSV Report", type="csv")
+
+    submitted = st.form_submit_button("✨ Polish Report")
+
 if submitted and uploaded_file:
     try:
         df = pd.read_csv(uploaded_file)
-        # Preview original CSV
-        st.subheader("🔍 Original Report Preview")
-        st.dataframe(df.head())
+        preview_df = df.copy()
 
         # Create header rows
-        header = pd.DataFrame({
+        header_rows = pd.DataFrame({
             df.columns[0]: [company_name, report_type, date_range]
         })
 
-        # Concatenate headers with data
-        full_report = pd.concat([header, df], ignore_index=True)
+        # Concatenate header with original content
+        polished_report = pd.concat([header_rows, df], ignore_index=True)
 
-        # Generate filename
-        clean_company = company_name.replace(" ", "").replace(",", "")
-        clean_type = report_type.replace(" ", "")
-        clean_date = date_range.replace(" ", "").replace("/", "-").replace(",", "")
-        output_name = f"{clean_company}_{clean_type}_{clean_date}_polished.csv"
+        # Generate polished filename
+        clean_company = company_name.replace(" ", "").replace("/", "-")
+        clean_report = report_type.replace(" ", "").replace("/", "-")
+        clean_date = date_range.replace(" ", "").replace("/", "-")
 
-        # Download
-        csv_out = full_report.to_csv(index=False)
-        st.subheader("📤 Download Your Polished Report")
+        polished_filename = f"{clean_company}_{clean_report}_{clean_date}_polished.csv"
+
+        st.subheader("📄 Preview")
+        st.dataframe(preview_df.head())
+
+        # Downloadable output
+        csv_output = polished_report.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label=f"📥 Download {output_name}",
-            data=csv_out,
-            file_name=output_name,
+            label="📤 Download Polished Report",
+            data=csv_output,
+            file_name=polished_filename,
             mime="text/csv"
         )
 
     except Exception as e:
-        st.error(f"❌ Error processing file: {e}")
+        st.error(f"❌ Failed to process file: {e}")
+
+elif submitted and not uploaded_file:
+    st.warning("⚠️ Please upload a CSV file to continue.")
 
 elif submitted:
     st.warning("⚠️ Please upload a CSV file to proceed.")
