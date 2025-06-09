@@ -3,7 +3,7 @@ import pandas as pd
 from io import StringIO
 import datetime
 
-st.set_page_config(page_title="📁 Report Polisher", layout="centered")
+st.set_page_config(page_title="Report Polisher", layout="centered")
 st.title("📁 Report Polisher")
 
 st.markdown("""
@@ -47,16 +47,20 @@ if submit_button and uploaded_file:
         original_columns = df.columns.tolist()
         num_cols = len(original_columns)
 
-        header_data = pd.DataFrame(
-            [[company_name] + ["" for _ in range(num_cols - 1)],
-             ["Report: " + final_report_type] + ["" for _ in range(num_cols - 1)],
-             ["Date: " + date_range] + ["" for _ in range(num_cols - 1)],
-             ["" for _ in range(num_cols)]],
-            columns=original_columns
-        )
+        # Create the header rows
+        header_rows = pd.DataFrame([
+            ["Company Name"] + ["" for _ in range(num_cols - 1)],
+            ["Report"] + ["" for _ in range(num_cols - 1)],
+            ["Date or Date Range"] + ["" for _ in range(num_cols - 1)],
+            ["" for _ in range(num_cols)],
+            original_columns
+        ])
 
-        df.columns = original_columns
-        polished_df = pd.concat([header_data, df], ignore_index=True)
+        data_rows = df.values.tolist()
+        combined_rows = header_rows.values.tolist() + data_rows
+
+        # Convert to DataFrame without altering headers again
+        polished_df = pd.DataFrame(combined_rows)
 
         st.subheader("📌 Polished Report Preview")
         st.dataframe(polished_df, use_container_width=True)
