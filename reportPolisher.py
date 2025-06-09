@@ -3,8 +3,8 @@ import pandas as pd
 from io import StringIO
 import datetime
 
-st.set_page_config(page_title="\ud83d\udcc1 Report Polisher", layout="centered")
-st.title("\ud83d\udcc1 Report Polisher")
+st.set_page_config(page_title="📁 Report Polisher", layout="centered")
+st.title("📁 Report Polisher")
 
 st.markdown("""
 This tool allows you to upload a CSV report and generate a polished version with a professional header.
@@ -44,30 +44,28 @@ if submit_button and uploaded_file:
 
         final_report_type = custom_report_type if report_type == "Custom Report" and custom_report_type else report_type
 
-        # Store original column names
         original_columns = df.columns.tolist()
         num_cols = len(original_columns)
 
-        # Create header rows
-        header_data = pd.DataFrame([
-            [company_name] + ["" for _ in range(num_cols - 1)],
-            ["Report: " + final_report_type] + ["" for _ in range(num_cols - 1)],
-            ["Date: " + date_range] + ["" for _ in range(num_cols - 1)],
-            ["" for _ in range(num_cols)]
-        ], columns=original_columns)
+        header_data = pd.DataFrame(
+            [[company_name] + ["" for _ in range(num_cols - 1)],
+             ["Report: " + final_report_type] + ["" for _ in range(num_cols - 1)],
+             ["Date: " + date_range] + ["" for _ in range(num_cols - 1)],
+             ["" for _ in range(num_cols)]],
+            columns=original_columns
+        )
 
-        # Combine header and data with correct column headers
-        df.columns = original_columns  # Reset column headers in case of changes
+        df.columns = original_columns
         polished_df = pd.concat([header_data, df], ignore_index=True)
 
-        st.subheader("\ud83d\udccc Polished Report Preview")
+        st.subheader("📌 Polished Report Preview")
         st.dataframe(polished_df, use_container_width=True)
 
         filename = f"{company_name.replace(' ', '')}_{final_report_type.replace(' ', '')}_{date_range.replace(' ', '')}.csv"
-        csv = polished_df.to_csv(index=False, header=False)
+        csv = polished_df.to_csv(index=False, header=False, encoding='utf-8')
 
         st.download_button(
-            label="\ud83d\uddd5\ufe0f Download Polished CSV",
+            label="🗕 Download Polished CSV",
             data=csv,
             file_name=filename,
             mime="text/csv"
