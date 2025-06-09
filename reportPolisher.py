@@ -47,11 +47,11 @@ if submit_button and uploaded_file:
         original_columns = df.columns.tolist()
         num_cols = len(original_columns)
 
-        # Create the header rows
+        # Create the header rows with actual user input
         header_rows = pd.DataFrame([
-            ["Company Name"] + ["" for _ in range(num_cols - 1)],
-            ["Report"] + ["" for _ in range(num_cols - 1)],
-            ["Date or Date Range"] + ["" for _ in range(num_cols - 1)],
+            [company_name] + ["" for _ in range(num_cols - 1)],
+            [final_report_type] + ["" for _ in range(num_cols - 1)],
+            [date_range] + ["" for _ in range(num_cols - 1)],
             ["" for _ in range(num_cols)],
             original_columns
         ])
@@ -79,3 +79,4 @@ if submit_button and uploaded_file:
         st.error(f"An error occurred while processing the file: {e}")
 else:
     st.info("Please fill out all fields and upload a CSV file to polish your report.")
+
