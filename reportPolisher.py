@@ -3,8 +3,8 @@ import pandas as pd
 from io import StringIO
 import datetime
 
-st.set_page_config(page_title="📑 Report Polisher", layout="centered")
-st.title("📑 Report Polisher")
+st.set_page_config(page_title="📁 Report Polisher", layout="centered")
+st.title("📁 Report Polisher")
 
 st.markdown("""
 This tool allows you to upload a CSV report and generate a polished version with a professional header.
@@ -43,21 +43,22 @@ if submit_button and uploaded_file:
         df = pd.read_csv(uploaded_file)
 
         final_report_type = custom_report_type if report_type == "Custom Report" and custom_report_type else report_type
-        
-        # Construct polished header
-        header_rows = pd.DataFrame({df.columns[0]: [company_name, final_report_type, date_range]})
 
-        # Combine header and original data
-        polished_df = pd.concat([header_rows, df], ignore_index=True)
+        # Prepare new header layout in specific columns
+        header_row = pd.DataFrame([[company_name, final_report_type, date_range]], columns=df.columns[:3].tolist() + [""] * (len(df.columns) - 3))
+        blank_row = pd.DataFrame([[''] * len(df.columns)], columns=df.columns)
+
+        # Combine with the original report
+        polished_df = pd.concat([header_row, blank_row, df], ignore_index=True)
 
         st.subheader("📋 Polished Report Preview")
         st.dataframe(polished_df, use_container_width=True)
 
-        filename = f"{company_name.replace(' ', '')}_{final_report_type.replace(' ', '')}_{date_range.replace(' ', '')}_polished.csv"
-        csv = polished_df.to_csv(index=False)
+        filename = f"{company_name.replace(' ', '')}_{final_report_type.replace(' ', '')}_{date_range.replace(' ', '')}.csv"
+        csv = polished_df.to_csv(index=False, header=False)
 
         st.download_button(
-            label="📥 Download Polished CSV",
+            label="📅 Download Polished CSV",
             data=csv,
             file_name=filename,
             mime="text/csv"
