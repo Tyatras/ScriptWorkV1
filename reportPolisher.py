@@ -44,22 +44,16 @@ if submit_button and uploaded_file:
 
         final_report_type = custom_report_type if report_type == "Custom Report" and custom_report_type else report_type
 
-        # Create header row aligned with columns A, B, and C
-        header_data = ["" for _ in df.columns]
-        if len(header_data) >= 3:
-            header_data[0] = company_name
-            header_data[1] = final_report_type
-            header_data[2] = date_range
-        else:
-            for i, val in enumerate([company_name, final_report_type, date_range]):
-                if i < len(header_data):
-                    header_data[i] = val
+        # Prepare header rows manually
+        header_rows = pd.DataFrame([
+            [company_name] + ["" for _ in range(len(df.columns) - 1)],
+            ["Report: " + final_report_type] + ["" for _ in range(len(df.columns) - 1)],
+            ["Date: " + date_range] + ["" for _ in range(len(df.columns) - 1)],
+            ["" for _ in range(len(df.columns))]
+        ], columns=df.columns)
 
-        header_row = pd.DataFrame([header_data], columns=df.columns)
-        blank_row = pd.DataFrame([["" for _ in df.columns]], columns=df.columns)
-
-        # Combine header, blank line, and original report
-        polished_df = pd.concat([header_row, blank_row, df], ignore_index=True)
+        # Combine headers with original data
+        polished_df = pd.concat([header_rows, df], ignore_index=True)
 
         st.subheader("📋 Polished Report Preview")
         st.dataframe(polished_df, use_container_width=True)
